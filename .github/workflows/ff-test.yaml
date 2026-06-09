@@ -1,0 +1,36 @@
+name: FF Merge
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_branch:
+        description: "Source branch name"
+        required: true
+        default: "feature"
+
+      target_branch:
+        description: "Target branch name"
+        required: true
+        default: "main"
+
+permissions:
+  contents: write
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fast Forward Merge
+        run: |
+          git fetch origin
+
+          git checkout ${{ github.event.inputs.target_branch }}
+
+          git merge --ff-only origin/${{ github.event.inputs.source_branch }}
+
+          git push origin ${{ github.event.inputs.target_branch }}
